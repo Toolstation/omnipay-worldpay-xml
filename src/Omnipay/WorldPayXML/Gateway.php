@@ -293,4 +293,44 @@ class Gateway extends AbstractGateway
             $parameters
         );
     }
+
+    public function refund(array $parameters = array())
+    {
+        return $this->createRequest('\Omnipay\WorldPayXML\Message\RefundRequest', $parameters);
+    }
+
+    public function cancel(array $parameters = [])
+    {
+        return $this->createRequest('Omnipay\WorldPayXML\Message\CancelRequest', $parameters);
+    }
+
+    public function authorise(array $parameters = [])
+    {
+        return $this->createRequest('Omnipay\WorldPayXML\Message\AuthorisationRequest', $parameters);
+    }
+
+    public function backOfficeCode(array $parameters = [])
+    {
+        return $this->createRequest('Omnipay\WorldPayXML\Message\BackOfficeCodeRequest', $parameters);
+    }
+
+    public function capture(array $parameters = [])
+    {
+        return $this->createRequest('Omnipay\WorldPayXML\Message\CaptureRequest', $parameters);
+    }
+
+    public function inquiry(array $parameters = [])
+    {
+        return $this->createRequest('Omnipay\WorldPayXML\Message\InquiryRequest', $parameters);
+    }
+
+    public function increaseAuthorisation(array $parameters = [])
+    {
+        return $this->createRequest('Omnipay\WorldPayXML\Message\IncreaseAuthorisationRequest', $parameters);
+    }
+
+    public function void(array $parameters = [])
+    {
+        return $this->createRequest('Omnipay\WorldPayXML\Message\VoidRequest', $parameters);
+    }
 }

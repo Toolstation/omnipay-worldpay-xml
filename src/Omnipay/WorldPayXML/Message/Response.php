@@ -12,6 +12,25 @@ use Omnipay\Common\Message\RequestInterface;
  */
 class Response extends AbstractResponse
 {
+
+    public static function make(RequestInterface $request, $data) {
+        if (empty($data)) {
+            throw new InvalidResponseException();
+        }
+
+        $responseDom = new DOMDocument;
+        $responseDom->loadXML($data);
+
+        $xmlData = simplexml_import_dom(
+            $responseDom->documentElement->firstChild->firstChild
+        );
+
+        if ($xmlData->requestInfo) {
+            return new RedirectResponse($request, $xmlData);
+        } else {
+            return new Response($request, $xmlData);
+        }
+    }
     /**
      * Constructor
      *
@@ -24,16 +43,7 @@ class Response extends AbstractResponse
     {
         $this->request = $request;
 
-        if (empty($data)) {
-            throw new InvalidResponseException();
-        }
-
-        $responseDom = new DOMDocument;
-        $responseDom->loadXML($data);
-
-        $this->data = simplexml_import_dom(
-            $responseDom->documentElement->firstChild->firstChild
-        );
+        $this->data = $data;
     }
 
     /**
@@ -123,10 +133,12 @@ class Response extends AbstractResponse
      */
     public function getTransactionReference()
     {
-        $attributes = $this->data->attributes();
+        if ($this->data instanceof \SimpleXMLElement) {
+            $attributes = $this->data->attributes();
 
-        if (isset($attributes['orderCode'])) {
-            return $attributes['orderCode'];
+            if (isset($attributes['orderCode'])) {
+                return $attributes['orderCode'];
+            }
         }
     }
 

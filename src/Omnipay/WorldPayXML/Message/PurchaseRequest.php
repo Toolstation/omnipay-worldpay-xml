@@ -2,24 +2,13 @@
 
 namespace Omnipay\WorldPayXML\Message;
 
-use Guzzle\Plugin\Cookie\Cookie;
-use Guzzle\Plugin\Cookie\CookiePlugin;
-use Guzzle\Plugin\Cookie\CookieJar\ArrayCookieJar;
 use Omnipay\Common\CreditCard;
-use Omnipay\Common\Message\AbstractRequest;
 
 /**
  * Omnipay WorldPay XML Purchase Request
  */
 class PurchaseRequest extends AbstractRequest
 {
-    const EP_HOST_LIVE = 'https://secure.worldpay.com';
-    const EP_HOST_TEST = 'https://secure-test.worldpay.com';
-
-    const EP_PATH = '/jsp/merchant/xml/paymentService.jsp';
-
-    const VERSION = '1.4';
-
     /**
      * @var \Guzzle\Plugin\Cookie\CookiePlugin
      *
@@ -63,54 +52,6 @@ class PurchaseRequest extends AbstractRequest
     }
 
     /**
-     * Get installation
-     *
-     * @access public
-     * @return string
-     */
-    public function getInstallation()
-    {
-        return $this->getParameter('installation');
-    }
-
-    /**
-     * Set installation
-     *
-     * @param string $value Installation
-     *
-     * @access public
-     * @return void
-     */
-    public function setInstallation($value)
-    {
-        return $this->setParameter('installation', $value);
-    }
-
-    /**
-     * Get merchant
-     *
-     * @access public
-     * @return string
-     */
-    public function getMerchant()
-    {
-        return $this->getParameter('merchant');
-    }
-
-    /**
-     * Set merchant
-     *
-     * @param string $value Merchant
-     *
-     * @access public
-     * @return void
-     */
-    public function setMerchant($value)
-    {
-        return $this->setParameter('merchant', $value);
-    }
-
-    /**
      * Get pa response
      *
      * @access public
@@ -132,54 +73,6 @@ class PurchaseRequest extends AbstractRequest
     public function setPaResponse($value)
     {
         return $this->setParameter('pa_response', $value);
-    }
-
-    /**
-     * Get password
-     *
-     * @access public
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->getParameter('password');
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $value Password
-     *
-     * @access public
-     * @return void
-     */
-    public function setPassword($value)
-    {
-        return $this->setParameter('password', $value);
-    }
-
-    /**
-     * Get redirect cookie
-     *
-     * @access public
-     * @return string
-     */
-    public function getRedirectCookie()
-    {
-        return $this->getParameter('redirect_cookie');
-    }
-
-    /**
-     * Set redirect cookie
-     *
-     * @param string $value Password
-     *
-     * @access public
-     * @return void
-     */
-    public function setRedirectCookie($value)
-    {
-        return $this->setParameter('redirect_cookie', $value);
     }
 
     /**
@@ -289,13 +182,14 @@ class PurchaseRequest extends AbstractRequest
         $this->validate('amount', 'card');
         $this->getCard()->validate();
 
-        $data = new \SimpleXMLElement('<paymentService />');
-        $data->addAttribute('version', self::VERSION);
-        $data->addAttribute('merchantCode', $this->getMerchant());
+        $data = $this->getBase();
 
         $order = $data->addChild('submit')->addChild('order');
         $order->addAttribute('orderCode', $this->getTransactionId());
-        $order->addAttribute('installationId', $this->getInstallation());
+        $installationId = $this->getInstallation();
+        if (!empty($installationId)) {
+            $order->addAttribute('installationId', $installationId);
+        }
 
         $order->addChild('description', $this->getDescription());
 
@@ -346,9 +240,14 @@ class PurchaseRequest extends AbstractRequest
         $address->addChild('postalCode', $this->getCard()->getPostcode());
         $address->addChild('countryCode', $this->getCard()->getCountry());
 
-        $session = $payment->addChild('session');
-        $session->addAttribute('shopperIPAddress', $this->getClientIP());
-        $session->addAttribute('id', $this->getSession());
+        $clientIp = $this->getClientIP();
+        $sessionId = $this->getSession();
+
+        if (!empty($clientIp) && !empty($sessionId)) {
+            $session = $payment->addChild('session');
+            $session->addAttribute('shopperIPAddress', $clientIp);
+            $session->addAttribute('id', $sessionId);
+        }
 
         $paResponse = $this->getPaResponse();
 
@@ -368,6 +267,16 @@ class PurchaseRequest extends AbstractRequest
             );
         }
 
+        $shippingAddress = $order->addChild('shippingAddress');
+        $address = $shippingAddress->addChild('address');
+        $address->addChild('firstName', $this->getCard()->getShippingFirstName());
+        $address->addChild('lastName', $this->getCard()->getShippingLastName());
+        $address->addChild('street', $this->getCard()->getShippingAddress1());
+        $address->addChild('postalCode', $this->getCard()->getShippingPostcode());
+        $address->addChild('city', $this->getCard()->getShippingCity());
+        $address->addChild('countryCode', $this->getCard()->getShippingCountry());
+        $address->addChild('telephoneNumber', $this->getCard()->getshippingPhone());
+
         $browser = $shopper->addChild('browser');
         $browser->addChild('acceptHeader', $this->getAcceptHeader());
         $browser->addChild('userAgentHeader', $this->getUserAgentHeader());
@@ -382,87 +291,11 @@ class PurchaseRequest extends AbstractRequest
     }
 
     /**
-     * Send data
-     *
-     * @param \SimpleXMLElement $data Data
-     *
-     * @access public
-     * @return RedirectResponse
+     * Return a value to indicate the transaction type.
+     * @return integer
      */
-    public function sendData($data)
+    public function getTransactionType()
     {
-        $implementation = new \DOMImplementation();
-
-        $dtd = $implementation->createDocumentType(
-            'paymentService',
-            '-//WorldPay//DTD WorldPay PaymentService v1//EN',
-            'http://dtd.worldpay.com/paymentService_v1.dtd'
-        );
-
-        $document = $implementation->createDocument(null, '', $dtd);
-        $document->encoding = 'utf-8';
-
-        $node = $document->importNode(dom_import_simplexml($data), true);
-        $document->appendChild($node);
-
-        $authorisation = base64_encode(
-            $this->getMerchant() . ':' . $this->getPassword()
-        );
-
-        $headers = array(
-            'Authorization' => 'Basic ' . $authorisation,
-            'Content-Type'  => 'text/xml; charset=utf-8'
-        );
-
-        $cookieJar = new ArrayCookieJar();
-
-        $redirectCookie = $this->getRedirectCookie();
-
-        if (!empty($redirectCookie)) {
-            $url = parse_url($this->getEndpoint());
-
-            $cookieJar->add(
-                new Cookie(
-                    array(
-                        'domain' => $url['host'],
-                        'name'   => 'machine',
-                        'path'   => '/',
-                        'value'  => $redirectCookie
-                    )
-                )
-            );
-        }
-
-        $this->cookiePlugin = new CookiePlugin($cookieJar);
-
-        $this->httpClient->addSubscriber($this->cookiePlugin);
-
-        $xml = $document->saveXML();
-
-        $httpResponse = $this->httpClient
-            ->post($this->getEndpoint(), $headers, $xml)
-            ->send();
-
-        return $this->response = new RedirectResponse(
-            $this,
-            $httpResponse->getBody()
-        );
-    }
-
-    /**
-     * Get endpoint
-     *
-     * Returns endpoint depending on test mode
-     *
-     * @access protected
-     * @return string
-     */
-    protected function getEndpoint()
-    {
-        if ($this->getTestMode()) {
-            return self::EP_HOST_TEST . self::EP_PATH;
-        }
-
-        return self::EP_HOST_LIVE . self::EP_PATH;
+        return static::PAYMENT_REQUEST;
     }
 }
