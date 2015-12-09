@@ -155,6 +155,22 @@ class GatewayTest extends GatewayTestCase
         $this->assertEquals('T0211010', $response->getTransactionReference());
     }
 
+    public function testCaptureFailure()
+    {
+        $this->setMockHttpResponse('CaptureFailure.txt');
+
+        $options = [
+            'orderCode' => 'T0211010',
+            'amount' => 12.34,
+            'currencyCode' => 'EUR',
+            'debitCreditIndicator' => 'credit',
+        ];
+
+        $response = $this->gateway->capture($options)->send();
+
+        $this->assertFalse($response->isSuccessful());
+    }
+
     public function testIncreasAuthorisationSuccess()
     {
         $this->setMockHttpResponse('IncreaseAuthorisationSuccess.txt');
@@ -211,6 +227,39 @@ class GatewayTest extends GatewayTestCase
         ];
 
         $response = $this->gateway->inquiry($options)->send();
+
+        $this->assertFalse($response->isSuccessful());
+    }
+
+    public function testRefundSuccess()
+    {
+        $this->setMockHttpResponse('RefundSuccess.txt');
+
+        $options = [
+            'orderCode' => 'T0211010',
+            'amount' => 12.34,
+            'amountCurrencyCode' => 'GBP',
+            'debitOrCredit' => 'credit',
+        ];
+
+        $response = $this->gateway->void($options)->send();
+
+        $this->assertTrue($response->isSuccessful());
+        $this->assertEquals('T0211010', $response->getTransactionReference());
+    }
+
+    public function testRefundFailure()
+    {
+        $this->setMockHttpResponse('RefundFailure.txt');
+
+        $options = [
+            'orderCode' => 'T0211010',
+            'amount' => 12.34,
+            'amountCurrencyCode' => 'GBP',
+            'debitOrCredit' => 'xxxxx',
+        ];
+
+        $response = $this->gateway->void($options)->send();
 
         $this->assertFalse($response->isSuccessful());
     }

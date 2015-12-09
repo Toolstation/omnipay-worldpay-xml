@@ -80,11 +80,11 @@ class Gateway extends AbstractGateway
      * @param string $value Installation value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setInstallation($value)
     {
-        $this->setParameter('installation', $value);
+        return $this->setParameter('installation', $value);
     }
 
     /**
@@ -104,11 +104,11 @@ class Gateway extends AbstractGateway
      * @param string $value Merchant value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setMerchant($value)
     {
-        $this->setParameter('merchant', $value);
+        return $this->setParameter('merchant', $value);
     }
 
     /**
@@ -128,11 +128,11 @@ class Gateway extends AbstractGateway
      * @param string $value Pa response value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setPaResponse($value)
     {
-        $this->setParameter('pa_response', $value);
+        return $this->setParameter('pa_response', $value);
     }
 
     /**
@@ -152,11 +152,11 @@ class Gateway extends AbstractGateway
      * @param string $value Password value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setPassword($value)
     {
-        $this->setParameter('password', $value);
+        return $this->setParameter('password', $value);
     }
 
     /**
@@ -176,11 +176,11 @@ class Gateway extends AbstractGateway
      * @param string $value Redirect cookie value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setRedirectCookie($value)
     {
-        $this->setParameter('redirect_cookie', $value);
+        return $this->setParameter('redirect_cookie', $value);
     }
 
     /**
@@ -200,11 +200,11 @@ class Gateway extends AbstractGateway
      * @param string $value Redirect echo value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setRedirectEcho($value)
     {
-        $this->setParameter('redirect_echo', $value);
+        return $this->setParameter('redirect_echo', $value);
     }
 
     /**
@@ -224,11 +224,11 @@ class Gateway extends AbstractGateway
      * @param string $value Session value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setSession($value)
     {
-        $this->setParameter('session', $value);
+        return $this->setParameter('session', $value);
     }
 
     /**
@@ -248,11 +248,11 @@ class Gateway extends AbstractGateway
      * @param string $value User agent header value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setUserAgentHeader($value)
     {
-        $this->setParameter('userAgentHeader', $value);
+        return $this->setParameter('userAgentHeader', $value);
     }
 
     /**
@@ -272,11 +272,11 @@ class Gateway extends AbstractGateway
      * @param string $value User ip value
      *
      * @access public
-     * @return void
+     * @return $this
      */
     public function setUserIP($value)
     {
-        $this->setParameter('userIP', $value);
+        return $this->setParameter('userIP', $value);
     }
 
     /**
