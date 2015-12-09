@@ -1,12 +1,15 @@
 <?php
-
+/**
+ * Refund request.
+ */
 
 namespace Omnipay\WorldPayXML\Message;
 
 /**
  * Omnipay WorldPay XML Refund Request
  */
-class RefundRequest extends ModifyRequest {
+class RefundRequest extends ModifyRequest
+{
 
     public function getData()
     {
@@ -18,11 +21,12 @@ class RefundRequest extends ModifyRequest {
         $amount->addAttribute('exponent', $this->getCurrencyDecimalPlaces());
         $amount->addAttribute('debitCreditIndicator', $this->getDebitCreditIndicator());
 
-	    return $data;
+        return $data;
     }
 
     /**
      * Return a value to indicate the transaction type.
+     *
      * @return integer
      */
     public function getTransactionType()

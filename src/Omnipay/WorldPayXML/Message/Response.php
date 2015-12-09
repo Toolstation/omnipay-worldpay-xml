@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * WorldPay XML Response
+ */
 namespace Omnipay\WorldPayXML\Message;
 
 use DOMDocument;
@@ -8,12 +10,21 @@ use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RequestInterface;
 
 /**
- * WorldPay XML Response
+ * Class Response
+ * @package Omnipay\WorldPayXML\Message
  */
 class Response extends AbstractResponse
 {
 
-    public static function make(RequestInterface $request, $data) {
+    /**
+     * @param RequestInterface $request
+     * @param                  $data
+     *
+     * @return ModifyResponse|RedirectResponse|Response
+     * @throws InvalidResponseException
+     */
+    public static function make(RequestInterface $request, $data)
+    {
         if (empty($data)) {
             throw new InvalidResponseException();
         }
@@ -21,9 +32,22 @@ class Response extends AbstractResponse
         $responseDom = new DOMDocument;
         $responseDom->loadXML($data);
 
-        $xmlData = simplexml_import_dom(
-            $responseDom->documentElement->firstChild->firstChild
-        );
+        if ($request instanceof \Omnipay\WorldPayXML\Message\ModifyRequest &&
+            !($request instanceof \Omnipay\WorldPayXML\Message\IncreaseAuthorisationRequest)
+        ) {
+            $xmlData = simplexml_import_dom(
+                $responseDom->documentElement->firstChild
+            );
+
+            return new ModifyResponse(
+                $request,
+                $xmlData
+            );
+        } else {
+            $xmlData = simplexml_import_dom(
+                $responseDom->documentElement->firstChild->firstChild
+            );
+        }
 
         if ($xmlData->requestInfo) {
             return new RedirectResponse($request, $xmlData);
@@ -31,6 +55,7 @@ class Response extends AbstractResponse
             return new Response($request, $xmlData);
         }
     }
+
     /**
      * Constructor
      *
@@ -41,6 +66,10 @@ class Response extends AbstractResponse
      */
     public function __construct(RequestInterface $request, $data)
     {
+        if (empty($data)) {
+            throw new InvalidResponseException();
+        }
+
         $this->request = $request;
 
         $this->data = $data;
@@ -54,13 +83,13 @@ class Response extends AbstractResponse
      */
     public function getMessage()
     {
-        $codes = array(
-            0  => 'AUTHORISED',
-            2  => 'REFERRED',
-            3  => 'INVALID ACCEPTOR',
-            4  => 'HOLD CARD',
-            5  => 'REFUSED',
-            8  => 'APPROVE AFTER IDENTIFICATION',
+        $codes = [
+            0 => 'AUTHORISED',
+            2 => 'REFERRED',
+            3 => 'INVALID ACCEPTOR',
+            4 => 'HOLD CARD',
+            5 => 'REFUSED',
+            8 => 'APPROVE AFTER IDENTIFICATION',
             12 => 'INVALID TRANSACTION',
             13 => 'INVALID AMOUNT',
             14 => 'INVALID ACCOUNT',
@@ -99,8 +128,8 @@ class Response extends AbstractResponse
             91 => 'CREDITCARD ISSUER TEMPORARILY NOT REACHABLE',
             92 => 'CREDITCARD TYPE NOT PROCESSED BY ACQUIRER',
             94 => 'DUPLICATE REQUEST ERROR',
-            97 => 'SECURITY BREACH'
-        );
+            97 => 'SECURITY BREACH',
+        ];
 
         $message = 'PENDING';
 
@@ -140,6 +169,8 @@ class Response extends AbstractResponse
                 return $attributes['orderCode'];
             }
         }
+
+        return null;
     }
 
     /**

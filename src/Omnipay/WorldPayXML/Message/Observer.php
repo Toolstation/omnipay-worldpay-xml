@@ -8,15 +8,16 @@ namespace Omnipay\WorldPayXML\Message;
  * Interface Observer
  * @package Omnipay\WorldPayXML\Message
  */
-interface Observer {
+interface Observer
+{
 
-	/**
-	 * Method to be implemented by observers.
-	 *
-	 * @param AbstractRequest $observable The observable instance.
-	 * @param array $data                 Extra data to be returned from the observable.
-	 *
-	 * @return mixed
-	 */
-	public function update(AbstractRequest $observable, array $data);
+    /**
+     * Method to be implemented by observers.
+     *
+     * @param AbstractRequest $observable The observable instance.
+     * @param array           $data       Extra data to be returned from the observable.
+     *
+     * @return mixed
+     */
+    public function update(AbstractRequest $observable, array $data);
 }

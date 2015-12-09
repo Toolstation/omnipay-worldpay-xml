@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Response returned when the response from Worldpay indicates that a redirect is required.
+ */
 namespace Omnipay\WorldPayXML\Message;
 
 use Omnipay\Common\Message\RedirectResponseInterface;
@@ -47,10 +49,10 @@ class RedirectResponse extends Response implements RedirectResponseInterface
      */
     public function getRedirectData()
     {
-        return array(
-            'PaReq'   => $this->data->requestInfo->request3DSecure->paRequest,
-            'TermUrl' => $this->request->getTermUrl()
-        );
+        return [
+            'PaReq' => $this->data->requestInfo->request3DSecure->paRequest,
+            'TermUrl' => $this->request->getTermUrl(),
+        ];
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Purchase request.
+ */
 namespace Omnipay\WorldPayXML\Message;
 
 use Omnipay\Common\CreditCard;
@@ -200,18 +202,18 @@ class PurchaseRequest extends AbstractRequest
 
         $payment = $order->addChild('paymentDetails');
 
-        $codes = array(
-            CreditCard::BRAND_AMEX        => 'AMEX-SSL',
-            CreditCard::BRAND_DANKORT     => 'DANKORT-SSL',
+        $codes = [
+            CreditCard::BRAND_AMEX => 'AMEX-SSL',
+            CreditCard::BRAND_DANKORT => 'DANKORT-SSL',
             CreditCard::BRAND_DINERS_CLUB => 'DINERS-SSL',
-            CreditCard::BRAND_DISCOVER    => 'DISCOVER-SSL',
-            CreditCard::BRAND_JCB         => 'JCB-SSL',
-            CreditCard::BRAND_LASER       => 'LASER-SSL',
-            CreditCard::BRAND_MAESTRO     => 'MAESTRO-SSL',
-            CreditCard::BRAND_MASTERCARD  => 'ECMC-SSL',
-            CreditCard::BRAND_SWITCH      => 'MAESTRO-SSL',
-            CreditCard::BRAND_VISA        => 'VISA-SSL'
-        );
+            CreditCard::BRAND_DISCOVER => 'DISCOVER-SSL',
+            CreditCard::BRAND_JCB => 'JCB-SSL',
+            CreditCard::BRAND_LASER => 'LASER-SSL',
+            CreditCard::BRAND_MAESTRO => 'MAESTRO-SSL',
+            CreditCard::BRAND_MASTERCARD => 'ECMC-SSL',
+            CreditCard::BRAND_SWITCH => 'MAESTRO-SSL',
+            CreditCard::BRAND_VISA => 'VISA-SSL',
+        ];
 
         $card = $payment->addChild($codes[$this->getCard()->getBrand()]);
         $card->addChild('cardNumber', $this->getCard()->getNumber());
@@ -223,8 +225,8 @@ class PurchaseRequest extends AbstractRequest
         $card->addChild('cardHolderName', $this->getCard()->getName());
 
         if (
-                $this->getCard()->getBrand() == CreditCard::BRAND_MAESTRO
-             || $this->getCard()->getBrand() == CreditCard::BRAND_SWITCH
+            $this->getCard()->getBrand() == CreditCard::BRAND_MAESTRO
+            || $this->getCard()->getBrand() == CreditCard::BRAND_SWITCH
         ) {
             $start = $card->addChild('startDate')->addChild('date');
             $start->addAttribute('month', $this->getCard()->getStartDate('m'));

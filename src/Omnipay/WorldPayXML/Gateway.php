@@ -7,7 +7,8 @@ use Omnipay\Common\AbstractGateway;
 /**
  * WorldPay XML Class
  *
- * @link http://www.worldpay.com/support/bg/xml/kb/dxml_inv.pdf
+ * @link http://support.worldpay.com/support/kb/bg/pdf/bgxmldirect.pdf
+ *       http://support.worldpay.com/support/kb/gg/pdf/omoi.pdf
  */
 class Gateway extends AbstractGateway
 {
@@ -30,12 +31,12 @@ class Gateway extends AbstractGateway
      */
     public function getDefaultParameters()
     {
-        return array(
+        return [
             'installation' => '',
-            'merchant'     => '',
-            'password'     => '',
-            'testMode'     => false,
-        );
+            'merchant' => '',
+            'password' => '',
+            'testMode' => false,
+        ];
     }
 
     /**
@@ -59,7 +60,7 @@ class Gateway extends AbstractGateway
      */
     public function setAcceptHeader($value)
     {
-        return $this->setParameter('acceptHeader', $value);
+        $this->setParameter('acceptHeader', $value);
     }
 
     /**
@@ -83,7 +84,7 @@ class Gateway extends AbstractGateway
      */
     public function setInstallation($value)
     {
-        return $this->setParameter('installation', $value);
+        $this->setParameter('installation', $value);
     }
 
     /**
@@ -107,7 +108,7 @@ class Gateway extends AbstractGateway
      */
     public function setMerchant($value)
     {
-        return $this->setParameter('merchant', $value);
+        $this->setParameter('merchant', $value);
     }
 
     /**
@@ -131,7 +132,7 @@ class Gateway extends AbstractGateway
      */
     public function setPaResponse($value)
     {
-        return $this->setParameter('pa_response', $value);
+        $this->setParameter('pa_response', $value);
     }
 
     /**
@@ -155,7 +156,7 @@ class Gateway extends AbstractGateway
      */
     public function setPassword($value)
     {
-        return $this->setParameter('password', $value);
+        $this->setParameter('password', $value);
     }
 
     /**
@@ -179,7 +180,7 @@ class Gateway extends AbstractGateway
      */
     public function setRedirectCookie($value)
     {
-        return $this->setParameter('redirect_cookie', $value);
+        $this->setParameter('redirect_cookie', $value);
     }
 
     /**
@@ -203,7 +204,7 @@ class Gateway extends AbstractGateway
      */
     public function setRedirectEcho($value)
     {
-        return $this->setParameter('redirect_echo', $value);
+        $this->setParameter('redirect_echo', $value);
     }
 
     /**
@@ -227,7 +228,7 @@ class Gateway extends AbstractGateway
      */
     public function setSession($value)
     {
-        return $this->setParameter('session', $value);
+        $this->setParameter('session', $value);
     }
 
     /**
@@ -251,7 +252,7 @@ class Gateway extends AbstractGateway
      */
     public function setUserAgentHeader($value)
     {
-        return $this->setParameter('userAgentHeader', $value);
+        $this->setParameter('userAgentHeader', $value);
     }
 
     /**
@@ -275,7 +276,7 @@ class Gateway extends AbstractGateway
      */
     public function setUserIP($value)
     {
-        return $this->setParameter('userIP', $value);
+        $this->setParameter('userIP', $value);
     }
 
     /**
@@ -286,7 +287,7 @@ class Gateway extends AbstractGateway
      * @access public
      * @return \Omnipay\WorldPayXML\Message\PurchaseRequest
      */
-    public function purchase(array $parameters = array())
+    public function purchase(array $parameters = [])
     {
         return $this->createRequest(
             '\Omnipay\WorldPayXML\Message\PurchaseRequest',
@@ -294,41 +295,105 @@ class Gateway extends AbstractGateway
         );
     }
 
-    public function refund(array $parameters = array())
+    /**
+     * Refund
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\RefundRequest
+     */
+    public function refund(array $parameters = [])
     {
         return $this->createRequest('\Omnipay\WorldPayXML\Message\RefundRequest', $parameters);
     }
 
+    /**
+     * Cancel
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\CancelRequest
+     */
     public function cancel(array $parameters = [])
     {
         return $this->createRequest('Omnipay\WorldPayXML\Message\CancelRequest', $parameters);
     }
 
+    /**
+     * Authorise
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\AuthorisationRequest
+     */
     public function authorise(array $parameters = [])
     {
         return $this->createRequest('Omnipay\WorldPayXML\Message\AuthorisationRequest', $parameters);
     }
 
+    /**
+     * Backoffice Code
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\BackOfficeCodeRequest
+     */
     public function backOfficeCode(array $parameters = [])
     {
         return $this->createRequest('Omnipay\WorldPayXML\Message\BackOfficeCodeRequest', $parameters);
     }
 
+    /**
+     * Capture
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\CaptureRequest
+     */
     public function capture(array $parameters = [])
     {
         return $this->createRequest('Omnipay\WorldPayXML\Message\CaptureRequest', $parameters);
     }
 
+    /**
+     * Inquiry
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\InquiryRequest
+     */
     public function inquiry(array $parameters = [])
     {
         return $this->createRequest('Omnipay\WorldPayXML\Message\InquiryRequest', $parameters);
     }
 
+    /**
+     * Increase Authorisation
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\IncreaseAuthorisationRequest
+     */
     public function increaseAuthorisation(array $parameters = [])
     {
         return $this->createRequest('Omnipay\WorldPayXML\Message\IncreaseAuthorisationRequest', $parameters);
     }
 
+    /**
+     * Void
+     *
+     * @param array $parameters Parameters
+     *
+     * @access public
+     * @return \Omnipay\WorldPayXML\Message\VoidRequest
+     */
     public function void(array $parameters = [])
     {
         return $this->createRequest('Omnipay\WorldPayXML\Message\VoidRequest', $parameters);

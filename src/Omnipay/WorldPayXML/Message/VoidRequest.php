@@ -8,7 +8,8 @@ namespace Omnipay\WorldPayXML\Message;
 /**
  * Omnipay WorldPay XML Refund or Cancel Request
  */
-class VoidRequest extends ModifyRequest {
+class VoidRequest extends ModifyRequest
+{
 
     /**
      * Retrieve the data for the request.
@@ -18,9 +19,9 @@ class VoidRequest extends ModifyRequest {
     public function getData()
     {
         $data = $this->getBase();
-        $void = $data->modify->orderModification->addChild('cancelOrRefund');
+        $data->modify->orderModification->addChild('cancelOrRefund');
 
-	    return $data;
+        return $data;
     }
 
     /**
