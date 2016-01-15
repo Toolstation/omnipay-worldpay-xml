@@ -166,7 +166,7 @@ class Response extends AbstractResponse
             $attributes = $this->data->attributes();
 
             if (isset($attributes['orderCode'])) {
-                return $attributes['orderCode'];
+                return (string)$attributes['orderCode'];
             }
         }
 
